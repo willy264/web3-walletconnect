@@ -5,41 +5,7 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
 
 .wallet-container {
   max-width: 500px;
@@ -84,7 +50,7 @@ h2 {
 }
 
 .disconnect-btn {
-  background: #d9534f;
+  background: #d9544fb1;
   color: white;
 }
 
@@ -96,7 +62,7 @@ h2 {
 }
 
 .send-eth input, .add-chain input {
-  width: 100%;
+  width: 80%;
   padding: 8px;
   margin: 5px 0;
   border: 1px solid #666;
@@ -106,7 +72,7 @@ h2 {
 }
 
 .send-eth button {
-  background: #28a745;
+  background: #28a746c2;
   color: white;
 }
 
@@ -116,9 +82,8 @@ h2 {
   border-radius: 8px;
   margin-bottom: 15px;
 }
-
 .add-chain button {
-  background: #ff9800;
+  background: #242424;
   color: white;
 }
 

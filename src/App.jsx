@@ -1,36 +1,23 @@
 import { useState, useEffect } from "react";
-import "./App.css"; 
+import "./App.css";
 
 const App = () => {
   const [account, setAccount] = useState(null);
   const [chainId, setChainId] = useState(null);
   const [recipient, setRecipient] = useState("");
-  const [chainData, setChainData] = useState({
-    chainId: "",
-    chainName: "",
-    rpcUrl: "",
-    currencyName: "",
-    currencySymbol: "",
-    currencyDecimals: 18,
-    explorerUrl: "",
-  });
+  const [inputChainId, setInputChainId] = useState("");
 
   // Connect Wallet
   const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert("MetaMask not detected!");
-      return;
-    }
-  
+    if (!window.ethereum) return alert("MetaMask not detected!");
+
     try {
       const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
       setAccount(accounts[0]);
-  
-      const chain = await window.ethereum.request({ method: "eth_chainId" });
-      setChainId(chain);
+      setChainId(await window.ethereum.request({ method: "eth_chainId" }));
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      alert(`Error: ${error.message}`);
+      alert("Failed to connect wallet");
     }
   };
 
@@ -40,34 +27,21 @@ const App = () => {
     setChainId(null);
   };
 
-  // Handle input changes for adding a new chain
-  const handleChainInputChange = (e) => {
-    setChainData({ ...chainData, [e.target.name]: e.target.value });
-  };
+  // Switch to Existing Chain
+  const switchChain = async () => {
+    if (!window.ethereum) return alert("MetaMask not detected!");
+    if (!inputChainId) return alert("Enter a valid Chain ID!");
 
-  // Add a new Ethereum chain
-  const addCustomChain = async () => {
     try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: `0x${parseInt(chainData.chainId).toString(16)}`,
-            chainName: chainData.chainName,
-            rpcUrls: [chainData.rpcUrl],
-            nativeCurrency: {
-              name: chainData.currencyName,
-              symbol: chainData.currencySymbol,
-              decimals: Number(chainData.currencyDecimals),
-            },
-            blockExplorerUrls: [chainData.explorerUrl],
-          },
-        ],
+      await window.ethereum.request({      
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: `0x${parseInt(inputChainId).toString(16)}` }],
       });
-      alert("Chain added successfully!");
+      setChainId(`0x${parseInt(inputChainId).toString(16)}`);
+      alert("Switched to chain successfully!");
     } catch (error) {
-      console.error("Error adding network:", error);
-      alert("Failed to add chain.");
+      console.error("Error switching chain:", error);
+      alert("You do not have this chain added in MetaMask!");
     }
   };
 
@@ -83,13 +57,15 @@ const App = () => {
           {
             from: account,
             to: recipient,
-            value: "0x" + (0.01 * 10 ** 18).toString(16),
+            value: "0x" + (0.001 * 10 ** 18).toString(16),
           },
         ],
       });
       console.log("Transaction Hash:", transactionHash);
+      alert("Transfer successful")
     } catch (error) {
       console.error("Transaction failed:", error);
+      alert("Transfer failed")
     }
   };
 
@@ -134,19 +110,18 @@ const App = () => {
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
             />
-            <button onClick={sendETH}>Send 0.01 ETH</button>        
+            <button onClick={sendETH}>Send 0.001 ETH</button>
           </div>
 
           <div className="add-chain">
-            <h3>Add Custom Ethereum Chain</h3>
-            <input type="text" name="chainId" placeholder="Chain ID" onChange={handleChainInputChange} />
-            <input type="text" name="chainName" placeholder="Chain Name" onChange={handleChainInputChange} />
-            <input type="text" name="rpcUrl" placeholder="RPC URL" onChange={handleChainInputChange} />
-            <input type="text" name="currencyName" placeholder="Currency Name" onChange={handleChainInputChange} />
-            <input type="text" name="currencySymbol" placeholder="Currency Symbol" onChange={handleChainInputChange} />
-            <input type="text" name="currencyDecimals" placeholder="Decimals" onChange={handleChainInputChange} />
-            <input type="text" name="explorerUrl" placeholder="Block Explorer URL" onChange={handleChainInputChange} />
-            <button onClick={addCustomChain}>Add Chain</button>        
+            <h3>Switch Ethereum Chain</h3>
+            <input
+              type="text"
+              placeholder="Enter Chain ID"
+              value={inputChainId}
+              onChange={(e) => setInputChainId(e.target.value)}
+            />
+            <button onClick={switchChain}>Switch Chain</button>
           </div>
         </div>
       ) : (
